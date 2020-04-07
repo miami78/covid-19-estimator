@@ -29,4 +29,8 @@ const getInfectionsByDay = (currentlyInfected, days) => {
   return currentlyInfected * factor;
 };
 
-export { getDays, getCurrentlyInfected, getInfectionsByDay };
+const getPercentOf = (num, percent) => (num * percent) / 100;
+
+export {
+  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf
+};

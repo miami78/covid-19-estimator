@@ -1,4 +1,6 @@
-import { getDays, getCurrentlyInfected, getInfectionsByDay } from './utils';
+import {
+  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf
+} from './utils';
 
 const inputData = {
   region: {
@@ -15,7 +17,6 @@ const inputData = {
 };
 
 const covid19ImpactEstimator = (data = inputData) => {
-
   const {
     periodType, reportedCases, timeToElapse
   } = data;
@@ -23,19 +24,28 @@ const covid19ImpactEstimator = (data = inputData) => {
   const days = getDays(periodType, timeToElapse);
 
   const currentlyInfected = getCurrentlyInfected(reportedCases);
-  const estimateProjectedInfections = getCurrentlyInfected(reportedCases, true);
+  const xcurrentlyInfected = getCurrentlyInfected(reportedCases, true);
 
   const infectionsByRequestedTime = getInfectionsByDay(currentlyInfected, days);
-  const estimateInfectionsByRequestedTime = getInfectionsByDay(estimateProjectedInfections, days);
+  const xInfectionsByRequestedTime = getInfectionsByDay(xcurrentlyInfected, days);
+
+  const severeCasesByRequestedTime = getPercentOf(infectionsByRequestedTime, 15);
+  const xSevereCasesByRequestedTime = getPercentOf(xInfectionsByRequestedTime, 15);
 
   const impact = {
     currentlyInfected,
-    infectionsByRequestedTime
+    infectionsByRequestedTime,
+    severeCasesByRequestedTime
   };
-
+  const severeImpact = {
+    currentlyInfected: xcurrentlyInfected,
+    infectionsByRequestedTime: xInfectionsByRequestedTime,
+    severeCasesByRequestedTime: xSevereCasesByRequestedTime
+  };
   return {
     data,
-    impact
+    impact,
+    severeImpact
   };
 };
 
