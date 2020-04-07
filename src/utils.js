@@ -9,4 +9,24 @@ const getDays = (period, days) => {
   }
 };
 
-export default getDays;
+// Gets currently infected
+const getCurrentlyInfected = (reportedCases, isSevere = false) => {
+  const estimated = isSevere ? 50 : 10;
+  return reportedCases * estimated;
+};
+
+const getNumber = (number) => {
+  let result = number.toString();
+  [result] = result.split('.');
+  return Number(result);
+};
+
+// Gets infections by day
+const getInfectionsByDay = (currentlyInfected, days) => {
+  let factor = getNumber(days / 3);
+  factor = 2 ** factor;
+
+  return currentlyInfected * factor;
+};
+
+export { getDays, getCurrentlyInfected, getInfectionsByDay };

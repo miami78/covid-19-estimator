@@ -1,4 +1,4 @@
-import { getDays } from './utils';
+import { getDays, getCurrentlyInfected, getInfectionsByDay } from './utils';
 
 const inputData = {
   region: {
@@ -16,6 +16,27 @@ const inputData = {
 
 const covid19ImpactEstimator = (data = inputData) => {
 
+  const {
+    periodType, reportedCases, timeToElapse
+  } = data;
+
+  const days = getDays(periodType, timeToElapse);
+
+  const currentlyInfected = getCurrentlyInfected(reportedCases);
+  const estimateProjectedInfections = getCurrentlyInfected(reportedCases, true);
+
+  const infectionsByRequestedTime = getInfectionsByDay(currentlyInfected, days);
+  const estimateInfectionsByRequestedTime = getInfectionsByDay(estimateProjectedInfections, days);
+
+  const impact = {
+    currentlyInfected,
+    infectionsByRequestedTime
+  };
+
+  return {
+    data,
+    impact
+  };
 };
 
 export default covid19ImpactEstimator;
