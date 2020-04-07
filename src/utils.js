@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const getDays = (period, days) => {
   switch (period) {
     case 'weeks':
