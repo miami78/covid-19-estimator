@@ -31,6 +31,10 @@ const getInfectionsByDay = (currentlyInfected, days) => {
 
 const getPercentOf = (num, percent) => (num * percent) / 100;
 
+const getAvailableHospitalBeds = (totalBeds, availability) => getPercentOf(totalBeds, availability);
+
+const getDollarsInFlight = (infectionsByRequestedTime, days, region) => infectionsByRequestedTime * region.avgDailyIncomePopulation * region.avgDailyIncomeInUSD * days;
+
 export {
-  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf
+  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf, getDollarsInFlight, getAvailableHospitalBeds
 };

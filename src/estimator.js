@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 import {
-  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf
+  getDays, getCurrentlyInfected, getInfectionsByDay, getPercentOf, getDollarsInFlight, getAvailableHospitalBeds
 } from './utils';
 
 const inputData = {
@@ -18,7 +19,7 @@ const inputData = {
 
 const covid19ImpactEstimator = (data = inputData) => {
   const {
-    periodType, reportedCases, timeToElapse
+    periodType, reportedCases, timeToElapse, region, totalHospitalBeds 
   } = data;
 
   const days = getDays(periodType, timeToElapse);
@@ -32,15 +33,36 @@ const covid19ImpactEstimator = (data = inputData) => {
   const severeCasesByRequestedTime = getPercentOf(infectionsByRequestedTime, 15);
   const xSevereCasesByRequestedTime = getPercentOf(xInfectionsByRequestedTime, 15);
 
+  const hospitalBedsByRequestedTime = getAvailableHospitalBeds(totalHospitalBeds, 35) - severeCasesByRequestedTime;
+  const xHospitalBedsByRequestedTime = getAvailableHospitalBeds(totalHospitalBeds, 35) - xSevereCasesByRequestedTime;
+
+  const casesForICUByRequestedTime = getPercentOf(infectionsByRequestedTime, 5);
+  const xCasesForICUByRequestedTime = getPercentOf(xInfectionsByRequestedTime, 5);
+
+  const casesForVentilatorsByRequestedTime = getPercentOf(infectionsByRequestedTime, 2);
+  const xCasesForVentilatorsByRequestedTime = getPercentOf(xInfectionsByRequestedTime, 2);
+
+  const dollarsInFlight = getDollarsInFlight(infectionsByRequestedTime, days, region);
+  const xDollarsInFlight = getDollarsInFlight(xInfectionsByRequestedTime, days, region);
+
   const impact = {
     currentlyInfected,
     infectionsByRequestedTime,
-    severeCasesByRequestedTime
+    severeCasesByRequestedTime,
+    casesForICUByRequestedTime,
+    hospitalBedsByRequestedTime,
+    casesForVentilatorsByRequestedTime,
+    dollarsInFlight
   };
   const severeImpact = {
     currentlyInfected: xcurrentlyInfected,
     infectionsByRequestedTime: xInfectionsByRequestedTime,
-    severeCasesByRequestedTime: xSevereCasesByRequestedTime
+    severeCasesByRequestedTime: xSevereCasesByRequestedTime,
+    casesForICUByRequestedTime: xCasesForICUByRequestedTime,
+    hospitalBedsByRequestedTime: xHospitalBedsByRequestedTime,
+    casesForVentilatorsByRequestedTime: xCasesForVentilatorsByRequestedTime,
+    dollarsInFlight: xDollarsInFlight
+
   };
   return {
     data,
