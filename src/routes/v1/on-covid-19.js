@@ -1,8 +1,8 @@
-const fs = require('fs');
-const express = require('express');
-const constants = require('../../helper/constants');
-const Estimator = require('../../lib/estimator');
-const covid19ImpactEstimator = require('../../estimator');
+import fs from 'fs';
+import express from 'express';
+import constants from '../../helper/constants';
+import Estimator from '../../lib/estimator';
+import covid19ImpactEstimator from '../../estimator';
 
 const { getLogDate } = constants;
 const router = express.Router();
@@ -28,4 +28,4 @@ router.get('/logs', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

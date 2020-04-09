@@ -1,4 +1,4 @@
-const xml = require('xml');
+import xml from 'xml';
 
 class Estimator {
   constructor(estimator, data) {
@@ -31,4 +31,4 @@ class Estimator {
   }
 }
 
-module.exports = Estimator;
+export default Estimator;

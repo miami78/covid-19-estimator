@@ -1,9 +1,9 @@
-const fs = require('fs');
-const express = require('express');
-const cors = require('cors');
-const responseTime = require('./custom-middlewares/responseTimer');
-const onCovid19RouteHandler = require('./routes/v1/on-covid-19');
-const constants = require('./helper/constants');
+import fs from 'fs';
+import express from 'express';
+import cors from 'cors';
+import responseTime from './custom-middlewares/responseTimer';
+import onCovid19RouteHandler from './routes/v1/on-covid-19';
+import constants from './helper/constants';
 
 
 const { getLogDate } = constants;
@@ -28,4 +28,4 @@ app.use('/', express.static('public'));
 
 app.use('/api/v1/on-covid-19', onCovid19RouteHandler);
 
-module.exports = app;
+export default app;
