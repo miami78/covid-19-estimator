@@ -1,0 +1,13 @@
+GET		/		200		0.065 ms
+POST		/api/v1/on-covid-19		200		0.008 ms
+POST		/api/v1/on-covid-19/json		200		0.006 ms
+POST		/api/v1/on-covid-19/logs		200		0.006 ms
+GET		/api/v1/on-covid-19/logs		200		0.014 ms
+POST		/api/v1/on-covid-19/		200		0.007 ms
+GET		/api/v1/on-covid-19/		200		0.005 ms
+GET		/robots.txt		200		0.005 ms
+GET		/api/v1/on-covid-19/json		200		0.006 ms
+POST		/api/v1/on-covid-19/json		200		0.005 ms
+POST		/api/v1/on-covid-19/jxml		200		0.005 ms
+POST		/api/v1/on-covid-19/xml		200		0.006 ms
+POST		/api/v1/on-covid-19/json		200		0.006 ms
