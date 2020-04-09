@@ -1,6 +1,6 @@
 // Renamed variables due to linting restrictions
 
-import library from './helper/estimatorSupport';
+const library = require('./helper/estimatorSupport');
 
 const {
   getImpactCurrentlyInfected,
@@ -104,4 +104,4 @@ const covid19ImpactEstimator = (data) => {
   return result;
 };
 
-export default covid19ImpactEstimator;
+module.exports = covid19ImpactEstimator;

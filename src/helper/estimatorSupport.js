@@ -1,4 +1,4 @@
-import constants from './constants';
+const constants = require('./constants');
 
 /**
  * Function tagged with "Optimization" were abstracted
@@ -95,4 +95,4 @@ const library = {
   getDollarsInFlight
 };
 
-export default library;
+module.exports = library;

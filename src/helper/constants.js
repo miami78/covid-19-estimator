@@ -15,7 +15,7 @@ const getLogDate = () => {
 const nanosecondsInASecond = 1e9;
 const nanosecondsInAMillisecond = 1e6;
 
-export default {
+module.exports = {
   days,
   weeks,
   months,

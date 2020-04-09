@@ -1,4 +1,4 @@
-import support from '../helper/operationSupport';
+const support = require('../helper/operationSupport');
 
 const { toServerLog, getDuration } = support;
 
@@ -12,4 +12,4 @@ const responseTime = (req, res, next) => {
   next();
 };
 
-export default responseTime;
+module.exports = responseTime;

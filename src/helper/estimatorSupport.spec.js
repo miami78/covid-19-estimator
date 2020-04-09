@@ -1,4 +1,4 @@
-import library from './estimatorSupport';
+const library = require('./estimatorSupport');
 
 const {
   getImpactCurrentlyInfected,

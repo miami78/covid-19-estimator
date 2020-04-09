@@ -1,5 +1,6 @@
-import fs from 'fs';
-import constants from './constants';
+const fs = require('fs');
+
+const constants = require('./constants');
 
 const { nanosecondsInASecond, nanosecondsInAMillisecond, getLogDate } = constants;
 
@@ -18,7 +19,7 @@ const getDuration = (start) => {
   return (duration[0] * nanosecondsInASecond + duration[1]) / nanosecondsInAMillisecond;
 };
 
-export default {
+module.exports = {
   toServerLog,
   getDuration
 };

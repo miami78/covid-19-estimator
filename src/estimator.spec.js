@@ -1,4 +1,4 @@
-import estimator from './estimator';
+const estimator = require('./estimator');
 
 const data = {
   region: {
