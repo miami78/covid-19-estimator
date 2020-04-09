@@ -28,5 +28,4 @@ app.use('/', express.static('public'));
 
 app.use('/api/v1/on-covid-19', onCovid19RouteHandler);
 
-
-module.exports = app;
+export default app;
