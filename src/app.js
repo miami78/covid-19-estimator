@@ -5,6 +5,8 @@ import responseTime from './custom-middlewares/responseTimer';
 import onCovid19RouteHandler from './routes/v1/on-covid-19';
 import constants from './helper/constants';
 
+const serverless = require('serverless-http');
+
 
 const { getLogDate } = constants;
 
@@ -26,6 +28,6 @@ app.use(responseTime);
 
 app.use('/', express.static('public'));
 
-app.use('/api/v1/on-covid-19', onCovid19RouteHandler);
+app.use('/.netlify/functions/api/v1/on-covid-19', onCovid19RouteHandler);
 
-export default app;
+module.exports.handler = serverless(app);
