@@ -1,107 +1,67 @@
-// Renamed variables due to linting restrictions
+/* eslint-disable max-len */
 
-import library from './helper/estimatorSupport';
-
-const {
-  getImpactCurrentlyInfected,
-  getSevereCurrentlyInfected,
-  getNormalizedPeriod,
-  getInfectionsByRequestedTime,
-  getSevereCasesCount,
-  getRemainingHospitalBedsCount,
-  getCasesForICUCount,
-  getCasesForVentilatorsCount,
+import {
+  getNormalisedDays,
+  getCurrentlyInfected,
+  getInfectionsByDay,
+  getPercentOf,
+  getAvailableHospitalBeds,
   getDollarsInFlight
-} = library;
+} from './utilities';
 
-const covid19ImpactEstimator = (data) => {
-  const result = {
-    impact: {},
-    severeImpact: {}
+const inputData = {
+  region: {
+    name: 'Africa',
+    avgAge: 19.7,
+    avgDailyIncomeInUSD: 5,
+    avgDailyIncomePopulation: 0.71
+  },
+  periodType: 'days',
+  timeToElapse: 58,
+  reportedCases: 674,
+  population: 66622705,
+  totalHospitalBeds: 1380614
+};
+
+const covid19ImpactEstimator = (data = inputData) => {
+  // eslint-disable-next-line object-curly-newline
+  const { periodType, reportedCases, totalHospitalBeds, timeToElapse, region } = data;
+
+  const days = getNormalisedDays(periodType, timeToElapse);
+
+  const currentlyInfected = Math.trunc(getCurrentlyInfected(reportedCases));
+  const severeCurrentlyInfected = Math.trunc(getCurrentlyInfected(reportedCases, true));
+
+  const calculateRemainingData = (infected, period) => {
+    const infectionsByRequestedTime = Math.trunc(getInfectionsByDay(infected, period));
+    const severeCasesByRequestedTime = Math.trunc(getPercentOf(infectionsByRequestedTime, 15));
+    const hospitalBedsByRequestedTime = Math.trunc(
+      getAvailableHospitalBeds(totalHospitalBeds, 35) - severeCasesByRequestedTime
+    );
+    const casesForICUByRequestedTime = Math.trunc(getPercentOf(infectionsByRequestedTime, 5));
+    const casesForVentilatorsByRequestedTime = Math.trunc(getPercentOf(infectionsByRequestedTime, 2));
+    const dollarsInFlight = Number(getDollarsInFlight(infectionsByRequestedTime, period, region).toFixed(2));
+
+    return {
+      currentlyInfected: infected,
+      infectionsByRequestedTime,
+      severeCasesByRequestedTime,
+      hospitalBedsByRequestedTime,
+      calculateRemainingData,
+      casesForICUByRequestedTime,
+      casesForVentilatorsByRequestedTime,
+      dollarsInFlight
+    };
   };
 
+  const impactData = calculateRemainingData(currentlyInfected, days);
+  const severeImpactData = calculateRemainingData(severeCurrentlyInfected, days);
 
-  // Express period in days
-  const period = getNormalizedPeriod(data.timeToElapse, data.periodType);
-
-
-  // Add the input data
-  result.data = data;
-
-
-  // Add currently Infected
-  result.impact.currentlyInfected = getImpactCurrentlyInfected(data.reportedCases);
-  result.severeImpact.currentlyInfected = getSevereCurrentlyInfected(data.reportedCases);
-
-
-  // Add infections by requested time
-  result.impact.infectionsByRequestedTime = getInfectionsByRequestedTime(
-    result.impact.currentlyInfected,
-    period
-  );
-
-  result.severeImpact.infectionsByRequestedTime = getInfectionsByRequestedTime(
-    result.severeImpact.currentlyInfected,
-    period
-  );
-
-
-  // Add severe cases by requested time
-  result.impact.severeCasesByRequestedTime = getSevereCasesCount(
-    result.impact.infectionsByRequestedTime
-  );
-
-  result.severeImpact.severeCasesByRequestedTime = getSevereCasesCount(
-    result.severeImpact.infectionsByRequestedTime
-  );
-
-
-  // Add hospital beds by requested time
-  result.impact.hospitalBedsByRequestedTime = getRemainingHospitalBedsCount(
-    result.impact.severeCasesByRequestedTime,
-    data.totalHospitalBeds
-  );
-
-  result.severeImpact.hospitalBedsByRequestedTime = getRemainingHospitalBedsCount(
-    result.severeImpact.severeCasesByRequestedTime,
-    data.totalHospitalBeds
-  );
-
-
-  // Add cases for ICU by requested time
-  result.impact.casesForICUByRequestedTime = getCasesForICUCount(
-    result.impact.infectionsByRequestedTime
-  );
-
-  result.severeImpact.casesForICUByRequestedTime = getCasesForICUCount(
-    result.severeImpact.infectionsByRequestedTime
-  );
-
-  // Add cases for ventilators by requested time
-  result.impact.casesForVentilatorsByRequestedTime = getCasesForVentilatorsCount(
-    result.impact.infectionsByRequestedTime
-  );
-
-  result.severeImpact.casesForVentilatorsByRequestedTime = getCasesForVentilatorsCount(
-    result.severeImpact.infectionsByRequestedTime
-  );
-
-  // Add money lost over period of 30 days
-  result.impact.dollarsInFlight = getDollarsInFlight(
-    result.impact.infectionsByRequestedTime,
-    data.region.avgDailyIncomePopulation,
-    data.region.avgDailyIncomeInUSD,
-    period
-  );
-
-  result.severeImpact.dollarsInFlight = getDollarsInFlight(
-    result.severeImpact.infectionsByRequestedTime,
-    data.region.avgDailyIncomePopulation,
-    data.region.avgDailyIncomeInUSD,
-    period
-  );
-
-  return result;
+  return {
+    data,
+    impact: impactData,
+    severeImpact: severeImpactData
+  };
 };
 
 export default covid19ImpactEstimator;
