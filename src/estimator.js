@@ -1,77 +1,30 @@
-const { getTimeInDays } = require('./helper');
+import {
+  impactCalculator
+} from './helper';
 
-function hosBeds(avBed, container) {
-  return Math.trunc(avBed - container.severeCasesByRequestedTime);
-}
+const covid19ImpactEstimator = (data) => ({
+  data,
+  impact: impactCalculator({ ...data }, 10),
+  severeImpact: impactCalculator({ ...data }, 50)
+});
 
-function infections(container, factor) {
-  return container.currentlyInfected * (2 ** factor);
-}
+export const formatAPIResponse = (estimateValues) => covid19ImpactEstimator(estimateValues);
 
-function severeCases(container) {
-  return Math.trunc(0.15 * (container.infectionsByRequestedTime));
-}
+// export const formatAPIResponse = (estimateValues) => {
+//   const { impact, severeImpact, data } = covid19ImpactEstimator(estimateValues);
+//   const estimatedValues = {
+//     data,
+//     estimate: {
+//       impact, severeImpact
+//     }
+//   };
 
-function vent(container) {
-  return Math.trunc(0.02 * container.infectionsByRequestedTime);
-}
+//   return estimatedValues;
+// };
 
-function icu(container) {
-  return Math.trunc(0.05 * container.infectionsByRequestedTime);
-}
-
-function dollarsInFlight(container, avgIncome, income, days) {
-  return +Math.trunc((container.infectionsByRequestedTime * avgIncome * income) / days);
-}
-
-const computeCurrentlyInfected = (field, value) => field * value;
-
-const covid19ImpactEstimator = (data) => {
-  const {
-    periodType: period,
-    timeToElapse: time,
-    reportedCases,
-    totalHospitalBeds: beds,
-    region: {
-      avgDailyIncomeInUSD: income,
-      avgDailyIncomePopulation: avgIncome
-    }
-  } = data;
-
-  const impact = {};
-  const severeImpact = {};
-
-  // Challenge 1
-  impact.currentlyInfected = computeCurrentlyInfected(reportedCases, 10);
-  severeImpact.currentlyInfected = computeCurrentlyInfected(reportedCases, 50);
-
-  const inDays = getTimeInDays(period, time);
-  const factor = Math.trunc(inDays / 3);
-
-  impact.infectionsByRequestedTime = infections(impact, factor);
-  severeImpact.infectionsByRequestedTime = infections(severeImpact, factor);
-
-  // Challenge 2
-  impact.severeCasesByRequestedTime = severeCases(impact);
-  severeImpact.severeCasesByRequestedTime = severeCases(severeImpact);
-
-  const avBed = 0.35 * beds;
-  impact.hospitalBedsByRequestedTime = hosBeds(avBed, impact);
-  severeImpact.hospitalBedsByRequestedTime = hosBeds(avBed, severeImpact);
-
-  // Challenge 3
-  impact.casesForICUByRequestedTime = icu(impact);
-  severeImpact.casesForICUByRequestedTime = icu(severeImpact);
-  impact.casesForVentilatorsByRequestedTime = vent(impact);
-  severeImpact.casesForVentilatorsByRequestedTime = vent(severeImpact);
-  impact.dollarsInFlight = dollarsInFlight(impact, avgIncome, income, inDays);
-  severeImpact.dollarsInFlight = dollarsInFlight(severeImpact, avgIncome, income, inDays);
-
-  return {
-    data,
-    impact,
-    severeImpact
-  };
+export const jsonResponse = (request, response) => {
+  const result = request.body;
+  response.status(200).send(formatAPIResponse(result));
 };
 
 export default covid19ImpactEstimator;
