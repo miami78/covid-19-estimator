@@ -1,8 +1,7 @@
 import Xml2js from 'xml2js';
 import fs from 'fs';
 import path from 'path';
-
-import { formatAPIResponse, jsonResponse } from './estimator';
+import { covid19ImpactEstimator, jsonResponse } from './estimator';
 
 /**
  * @param {object} app
@@ -21,7 +20,7 @@ const routes = (app) => {
 
   app.post('/api/v1/on-covid-19/xml', (request, response) => {
     const data = request.body;
-    const estimation = formatAPIResponse(data);
+    const estimation = covid19ImpactEstimator(data);
     const builder = new Xml2js.Builder();
     response.header('Content-Type', 'application/xml; charset=UTF-8');
     response.status(200).send(builder.buildObject(estimation));
