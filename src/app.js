@@ -69,12 +69,10 @@ app.post('/api/v1/on-covid-19/xml', (req, res) => {
 });
 
 app.get('/api/v1/on-covid-19/logs', (req, res) => {
-  const logslog = 'GET\t\t/api/v1/on-covid-19/logs\t\t200\t\t20ms\n';
-  res.setHeader('Content-Type', 'text/plain');
-  fs.writeFileSync('log.txt', logslog, { flag: 'a', encoding: 'utf8' });
-  res.sendFile(path.join(__dirname, 'log.txt'), () => {
-    console.log('File sent successfully');
-  });
+  const logs = fs.readFileSync(path.join(__dirname, './logs/log.txt'), { encoding: 'utf-8' });
+  console.log(logs);
+  res.type('text/plain');
+  res.status(200).send(logs);
 });
 
 app.listen(port, () => {
