@@ -4,6 +4,7 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const convert = require('xml-js');
+const morgan = require('morgan');
 const estimator = require('./estimator');
 
 const app = express();
@@ -68,15 +69,27 @@ app.post('/api/v1/on-covid-19/xml', (req, res) => {
   res.send(convert.json2xml(JSON.stringify(estimator(data)), options));
 });
 
-app.get('/api/v1/on-covid-19/logs', (request, response) => {
-  try {
-    const filePath = path.join(__dirname, 'request_logs.txt');
-    const data = fs.readFileSync(filePath, 'utf8');
-    response.status(200).send(data);
-  } catch (error) {
-    throw new Error('Sorry, there was an issue reading the logs try');
+const writeStream = fs.createWriteStream(
+  path.join(__dirname, 'logs/app.log'), { flags: 'a', encoding: 'utf8' }
+);
+const logFormat = ':method\t:url\t:status\t:response-time';
+app.use(morgan(logFormat, {
+  stream: {
+    write(message) {
+      const finalIndex = message.length - 1;
+      const lastTabIndex = message.lastIndexOf('\t');
+      const str = message.substring(lastTabIndex + 1, finalIndex);
+      let time = Math.ceil(parseFloat(str));
+      if (time < 10) {
+        time = `0${time.toString()}`;
+      } else {
+        time = time.toString();
+      }
+      const msg = `${message.substring(0, lastTabIndex + 1)}`;
+      writeStream.write(msg);
+    }
   }
-});
+}));
 
 app.listen(port, () => {
   console.log(`Estimator is running on port ${port}`);
