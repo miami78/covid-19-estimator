@@ -68,11 +68,14 @@ app.post('/api/v1/on-covid-19/xml', (req, res) => {
   res.send(convert.json2xml(JSON.stringify(estimator(data)), options));
 });
 
-app.get('/api/v1/on-covid-19/logs', (req, res) => {
-  const logs = fs.readFileSync(path.join(__dirname, './logs/log.txt'), { encoding: 'utf-8' });
-  console.log(logs);
-  res.type('text/plain');
-  res.status(200).send(logs);
+app.get('/api/v1/on-covid-19/logs', (request, response) => {
+  try {
+    const filePath = path.join(__dirname, 'request_logs.txt');
+    const data = fs.readFileSync(filePath, 'utf8');
+    response.status(200).send(data);
+  } catch (error) {
+    throw new Error('Sorry, there was an issue reading the logs try');
+  }
 });
 
 app.listen(port, () => {
